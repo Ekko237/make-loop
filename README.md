@@ -23,6 +23,8 @@ bash install.sh claude   # 只装 Claude Code
 bash install.sh codex    # 只装 Codex
 ```
 
+目标目录里已经有一个同名 skill、而且不是这个脚本装的，会先整份备份再停下来，不会覆盖。确认要覆盖，在原来的命令后面加 `--force`。
+
 装好后，说「帮我变成 loop」「让它自己一轮一轮改到好」，或者 `/make-loop 你的任务`。
 
 MIT License
