@@ -2,11 +2,11 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-一个给 Claude Code / Codex 用的技能：把一句大白话的任务，改写成能放心让 AI 自己一轮一轮跑下去的循环（loop）任务说明。
+一个给 Claude Code、Codex、Cursor 和其他受 `npx skills` 支持的 AI agent 用的技能：把一句大白话的任务，改写成能放心让 AI 自己一轮一轮跑下去的循环（loop）任务说明。
 
 ## 适合谁
 
-已经在用 Claude Code 或 Codex，希望 agent 自己迭代一项任务、不必每一轮都人盯着——打磨一个产品、试玩一个游戏、审一批改动再修——但又不想自己写循环任务说明的人。
+已经在用 Claude Code、Codex、Cursor 或其他受 `npx skills` 支持的 AI agent，希望 agent 自己迭代一项任务、不必每一轮都人盯着——打磨一个产品、试玩一个游戏、审一批改动再修——但又不想自己写循环任务说明的人。
 
 ## 为什么现在就该试
 
@@ -14,8 +14,22 @@
 
 这个技能会替你补上：目标要能检查；「用」要真的操作，不能只从代码推断；每一项「过」都要有证据；主观质量用统一的尺子做独立评审；定期把前后对比给人本人看；刹车写全（做完了、卡住了、没进展、来回摆、上限、暂停），并按「有人 / 无人值守」决定是停下来问，还是绕过去接着跑。花钱和不可逆的事写进红线。默认只把任务写成 loop，不开始执行；只有你明确要求现在就在这次对话里执行，并先确认范围，才动手。
 
+## 安装
+
+### Option 1 — **Command**
+
+会把技能安装到当前项目的 `.agents/skills/make-loop`。如果终端是非交互模式，可以按需要加上 `-y`。
+
 ```bash
-git clone --branch v1.0.1 https://github.com/Ekko237/make-loop.git && cd make-loop && bash install.sh
+npx skills add https://github.com/Ekko237/make-loop --skill make-loop
+```
+
+### Option 2 — **Prompt**
+
+把下面的内容粘贴到 Claude Code、Codex、Cursor 或其他受支持的 agent 中，即可按需运行 make-loop，无需安装：
+
+```text
+Run `npx skills use "https://github.com/Ekko237/make-loop" --skill "make-loop"` and follow the generated skill instructions now. Read its complete output, redirecting it to a temporary file first if necessary. Resolve relative paths from the supporting-files directory it provides.
 ```
 
 [范例](references/examples.md) · [模板](references/template.md) · [自查清单](references/checklist.md) · [反馈 / 提 issue](https://github.com/Ekko237/make-loop/issues) · [ClawHub](https://clawhub.ai/ekko237/skills/make-loop)
@@ -24,15 +38,13 @@ git clone --branch v1.0.1 https://github.com/Ekko237/make-loop.git && cd make-lo
 
 ## 运行要求
 
-需要已经安装 Claude Code 和/或 Codex，也就是本机已有 `~/.claude` 或 `~/.codex`。安装脚本是 bash，并且会调用 `rsync`，所以还需要类 Unix 的 shell（macOS、Linux 或同等环境），并且 `PATH` 里有 `git`、`bash` 和 `rsync`。本仓库没有文档说明如何在 Windows 上安装。
+顶部的 Command 和 Prompt 路径需要 `git` 和带有 `npx` 的 Node.js，并且可用于 Claude Code、Codex、Cursor 和其他受 `npx skills` 支持的 agent。
 
-`bash install.sh` 会自动检测两种工具，找到哪个就装到哪个。`bash install.sh claude` 或 `bash install.sh codex` 只装其中一个。如果目标目录里已经有一个同名 skill、而且不是这个脚本装的，会先整份备份再停下来，不会覆盖；确认要覆盖，在原来的命令后面加 `--force`。如果上一次安装在创建目标目录之后失败了（比如当时没有 `rsync`），下一次运行可能会把那个空目录当成已有的 skill 并停下来；加上 `--force`，或者删掉空的 `~/.codex/skills/make-loop` 或 `~/.claude/skills/make-loop` 后再跑一次安装脚本。如果 `~/.claude` 和 `~/.codex` 都不存在，脚本会退出，并提示你先安装 Claude Code 或 Codex。
-
-当前版本是 [v1.0.1](https://github.com/Ekko237/make-loop/releases/tag/v1.0.1)。
+位于“其他安装方式”中的旧版 `install.sh` 要求本机已经存在 `~/.claude` 或 `~/.codex`，并需要类 Unix shell，以及 `git`、`bash` 和 `rsync`。
 
 ## 快速使用
 
-装好后，打开 Claude Code 或 Codex，说「帮我变成 loop」或 "turn this into a loop"，或者输入 `/make-loop` 加上你的任务。文档里写明的触发语还包括：「做成循环」「写个 loop」「让它自己一轮一轮改到好」「反复迭代直到没问题」「让它一直跑」。你应该得到一份完整的循环任务说明，放在一个代码块里，方便复制到新对话；下面还会用几句话说明它补了哪些默认值、两个开关选了什么（有人 / 无人值守；批量 / 小步），以及最关键的刹车。除非你明确要求现在就在这次对话里执行，并先确认范围，否则它不会开始跑这个 loop。
+装好后，打开 Claude Code、Codex、Cursor 或其他受支持的 agent，输入 `/make-loop` 加上任务，或使用自然语言触发语，例如「帮我变成 loop」或 "turn this into a loop"；也可以直接使用上面的 Prompt 选项。文档里写明的触发语还包括：「做成循环」「写个 loop」「让它自己一轮一轮改到好」「反复迭代直到没问题」「让它一直跑」。你应该得到一份完整的循环任务说明，放在一个代码块里，方便复制到新对话；下面还会用几句话说明它补了哪些默认值、两个开关选了什么（有人 / 无人值守；批量 / 小步），以及最关键的刹车。除非你明确要求现在就在这次对话里执行，并先确认范围，否则它不会开始跑这个 loop。
 
 一个最小的例子：
 
@@ -47,7 +59,7 @@ git clone --branch v1.0.1 https://github.com/Ekko237/make-loop.git && cd make-lo
 - 不适合没有迭代的一次性任务（改一处、答一句）。这个技能写的是 loop：目标、每轮过程、检查、记录和刹车。
 - 它不提供任务本身的专业知识。那部分来自当时的对话和你的其他技能。
 - 默认只交付说明。如果你需要 agent 在同一轮里直接动手、而且不要先写出 loop，这就不是合适的工具——除非你同时也明确要求按说明执行，并确认范围。
-- 安装脚本需要已经有 Claude Code 或 Codex（`~/.claude` 或 `~/.codex`）。两个目录都不存在时，脚本会退出。
+- `install.sh` 安装脚本专门要求本机已经存在 `~/.claude` 或 `~/.codex`；两个目录都不存在时，脚本会退出。而 `npx skills` 的 Command 和 Prompt 选项可用于 Claude Code、Codex、Cursor 和其他受支持的 agent。
 
 ## 和其他做法比
 
@@ -71,6 +83,18 @@ git clone --branch v1.0.1 https://github.com/Ekko237/make-loop.git && cd make-lo
 先定两个开关（从你的话里判断，判断不了就用默认值）：**有人 / 无人值守**（默认无人值守：卡住了先搁置、换别的做，只有截止、你叫停、或救不回来才停）和 **批量 / 小步**（有评审的任务默认批量：评审一次给全清单，开发一口气改完再评）。
 
 完整说明放在一个代码块里，方便一键复制到新对话。如果任务在某个项目文件夹里，也可以同时存一份到项目里（例如 `LOOP_BRIEF.md`），并且不要提交到公开仓库。代码块下面用三五行说明：补了哪些默认值、两个开关选了什么、最关键的刹车是什么。任务本身的专业知识仍然来自当时的对话和你的其他技能。
+
+## 其他安装方式
+
+也可以克隆固定的 v1.0.1 版本来安装：
+
+```bash
+git clone --branch v1.0.1 https://github.com/Ekko237/make-loop.git && cd make-loop && bash install.sh
+```
+
+当前版本是 [v1.0.1](https://github.com/Ekko237/make-loop/releases/tag/v1.0.1)。
+
+`install.sh` 会检测 `~/.claude` 和 `~/.codex`，并装到找到的目录中。`bash install.sh claude` 或 `bash install.sh codex` 只装其中一个。如果目标目录里已经有一个同名 skill、而且不是这个脚本装的，会先整份备份再停下来，不会覆盖；确认要覆盖，在原来的命令后面加 `--force`。如果上一次安装在创建目标目录之后失败了（比如当时没有 `rsync`），下一次运行可能会把那个空目录当成已有的 skill 并停下来；加上 `--force`，或者删掉空的 `~/.codex/skills/make-loop` 或 `~/.claude/skills/make-loop` 后再跑一次安装脚本。`install.sh` 要求本机已经存在 `~/.claude` 或 `~/.codex`，并需要类 Unix shell，以及 `git`、`bash` 和 `rsync`；它不走 `npx skills` 的 Command 或 Prompt 路径。如果 `~/.claude` 和 `~/.codex` 都不存在，脚本会退出，并提示你先安装 Claude Code 或 Codex。本仓库没有说明如何在 Windows 上使用 `install.sh`。
 
 ## 社区
 
